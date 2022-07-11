@@ -25,17 +25,16 @@ const uint8_t SWITCHES[4] = {48, 49, 50, 51}; // in order 8421 (see the board)
 const uint8_t CORRECT_PINS[5] = {25, 33, 27, 26, 14};
 
 #define RESET_BTN_PIN 19
-const uint8_t SWITCHES[4] = {16, 4, 5, 17,}; // in order 8421 (see the board)
+const uint8_t SWITCHES[4] = {16, 4, 5, 17}; // in order 8421 (see the board)
 #define INVERT_SWITCHES true
 
 #define PIEZO_PIN 0
 #define LED_PIN 18
 
-
 #endif
 
 const uint16_t GAMELENGTH_POSSIBILITIES[16] = {5, 10, 15, 20, 30, 40, 60, 80, 100, 120, 150, 180, 210, 240, 300, 600}; // in seconds
-#define PIEZO_SINGLEBEEP_LENGTH 100 // in ms
+#define PIEZO_SINGLEBEEP_LENGTH 100                                                                                    // in ms
 /*
 SEQUENCE HELP:
 in ms
@@ -201,7 +200,6 @@ void setup()
       {
         Serial.print("Invalid switch state: ");
         makesequence(INVALID_SWITCH_STATE_SEQUENCE);
-        ;
         Serial.println(switches_state);
       }
     }
@@ -225,7 +223,7 @@ void setup()
       }
     }
 
-    ledvalue = (millis() / 50 % 10);
+    ledvalue = !(millis() / 50 % 10);
 
     digitalWrite(PIEZO_PIN, piezovalue);
     digitalWrite(LED_PIN, ledvalue);
@@ -233,6 +231,14 @@ void setup()
 
   Serial.print("Correct pin: ");
   Serial.println(correct_pin);
+
+  delay(50);
+
+  while (!digitalRead(RESET_BTN_PIN))
+  {
+  }
+
+  delay(50);
 
   // select timer
   ////wait for button -> read the switches
@@ -280,7 +286,7 @@ void setup()
       }
     }
 
-    ledvalue = !(millis() / 50 % 10);
+    ledvalue = !((millis() / 50 % 10) && ((millis() - 200) / 50 + 2) % 10);
 
     digitalWrite(PIEZO_PIN, piezovalue);
     digitalWrite(LED_PIN, ledvalue);
