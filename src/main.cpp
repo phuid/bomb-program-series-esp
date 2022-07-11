@@ -372,6 +372,9 @@ void loop()
     ////check correct wire
     if (digitalRead(correct_pin) == 1)
     {
+      Serial.print((millis() - gamestart_time) / 1000.f);
+      Serial.print(": correct wire: ");
+      Serial.println(correct_pin);
       endgame(REASON_CORRECT_WIRE);
     }
 
@@ -383,6 +386,11 @@ void loop()
     {
       if (CORRECT_PINS[i] != correct_pin && digitalRead(CORRECT_PINS[i]) == 1)
       {
+        Serial.print((millis() - gamestart_time) / 1000.f);
+        Serial.print(": wrong wire: [");
+        Serial.print(i);
+        Serial.print("] = ");
+        Serial.println(CORRECT_PINS[i]);
         endgame(REASON_WRONG_WIRE);
         return;
       }
@@ -393,6 +401,9 @@ void loop()
 
     if (digitalRead(WRONG_PIN) == 1)
     {
+      Serial.print((millis() - gamestart_time) / 1000.f);
+      Serial.print(": wrong wire: [WRONG] = ");
+      Serial.println(WRONG_PIN);
       endgame(REASON_WRONG_WIRE);
     }
 
