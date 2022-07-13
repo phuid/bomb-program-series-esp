@@ -51,6 +51,8 @@ sequence ends instantly after third beep
 #define TIMER_SELECT_SEQUENCE 50, 50, 50, 0, 0           //#.#
 #define INVALID_SWITCH_STATE_SEQUENCE 300, 50, 300, 0, 0 //######.######
 
+#define WIRE_CHECK_TIME 300 // if wire disconnected, keep checking this wire for WIRE_CHECK_TIME miliseconds
+
 // CONFIG [above] (lines 4-34)
 ///////////////////////////////////////////////////////////////////////////////
 // DO NOT MODIFY [below]
@@ -370,8 +372,16 @@ void loop()
   {
     // check wires
     ////check correct wire
-    if (digitalRead(correct_pin) == 1)
+    if (digitalRead(correct_pin))
     {
+      uint32_t wire_timer_start = millis();
+
+      while (millis() - wire_timer_start < WIRE_CHECK_TIME)
+      {
+        if (!digitalRead(correct_pin))
+          return;
+      }
+
       Serial.print((millis() - gamestart_time) / 1000.f);
       Serial.print(": correct wire: ");
       Serial.println(correct_pin);
@@ -384,8 +394,16 @@ void loop()
     ////check wrong wires
     for (uint8_t i = 0; i < sizeof(CORRECT_PINS) / sizeof(CORRECT_PINS[0]); i++)
     {
-      if (CORRECT_PINS[i] != correct_pin && digitalRead(CORRECT_PINS[i]) == 1)
+      if (CORRECT_PINS[i] != correct_pin && digitalRead(CORRECT_PINS[i]))
       {
+        uint32_t wire_timer_start = millis();
+
+        while (millis() - wire_timer_start < WIRE_CHECK_TIME)
+        {
+          if (!digitalRead(CORRECT_PINS[i]))
+            return;
+        }
+
         Serial.print((millis() - gamestart_time) / 1000.f);
         Serial.print(": wrong wire: [");
         Serial.print(i);
@@ -399,8 +417,16 @@ void loop()
     if (gameover)
       return;
 
-    if (digitalRead(WRONG_PIN) == 1)
+    if (digitalRead(WRONG_PIN))
     {
+      uint32_t wire_timer_start = millis();
+
+      while (millis() - wire_timer_start < WIRE_CHECK_TIME)
+      {
+        if (!digitalRead(WRONG_PIN))
+          return;
+      }
+
       Serial.print((millis() - gamestart_time) / 1000.f);
       Serial.print(": wrong wire: [WRONG] = ");
       Serial.println(WRONG_PIN);
